@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kvadrātfunkcijas īpašības - paškontrole</title>
+  <style>
+    :root {
+      --primary-color: #4a6fa5;
+      --secondary-color: #166088;
+      --accent-color: #4fc3f7;
+      --background-color: #f5f7fa;
+      --card-color: #ffffff;
+      --text-color: #333333;
+      --correct-color: #e8f5e9;
+      --incorrect-color: #ffebee;
+      --correct-border: #4caf50;
+      --incorrect-border: #f44336;
+    }
+
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: var(--text-color);
+      background-color: var(--background-color);
+      padding: 20px;
+      margin: 0;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    h1 {
+      text-align: center;
+      color: var(--primary-color);
+      margin-bottom: 30px;
+      font-weight: 600;
+    }
+    
+    .user-input {
+      background: var(--card-color);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+      box-sizing: border-box;
+    }
+    
+    input[type="text"]:focus {
+      border-color: var(--primary-color);
+      outline: none;
+    }
+    
+    .question-block {
+      display: flex;
+      flex-direction: column;
+      background: var(--card-color);
+      margin-bottom: 25px;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+    }
+    
+    .question-block:hover {
+      transform: translateY(-3px);
+    }
+    
+    .question-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .question-number {
+      background-color: var(--primary-color);
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 15px;
+      flex-shrink: 0;
+    }
+    
+    .question-title {
+      font-weight: 600;
+      font-size: 18px;
+      color: var(--secondary-color);
+      margin: 0;
+    }
+    
+    .question-content {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    @media (min-width: 768px) {
+      .question-content {
+        flex-direction: row;
+      }
+    }
+    
+    .question-image {
+      flex: 1;
+      margin-right: 20px;
+      margin-bottom: 20px;
+    }
+    
+    @media (min-width: 768px) {
+      .question-image {
+        margin-bottom: 0;
+      }
+    }
+    
+    .question-image img {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .question-options {
+      flex: 2;
+    }
+    
+    .question-part {
+      margin-bottom: 20px;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      transition: all 0.3s;
+    }
+    
+    .question-part.correct {
+      background-color: var(--correct-color);
+      border-color: var(--correct-border);
+    }
+    
+    .question-part.incorrect {
+      background-color: var(--incorrect-color);
+      border-color: var(--incorrect-border);
+    }
+    
+    .question-part.unanswered {
+      border: 1px dashed #ccc;
+    }
+    
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+      margin-bottom: 15px;
+      background-color: white;
+    }
+    
+    select:focus {
+      border-color: var(--primary-color);
+      outline: none;
+    }
+    
+    .option {
+  display: flex;
+  align-items: center; /* Vertikāli centrē */
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.option input[type="radio"] {
+  margin: 0 8px 0 0; /* Labā labo atstarpi */
+  width: auto; /* Atjauno noklusēto platumu */
+  height: auto; /* Atjauno noklusēto augstumu */
+  position: static; /* Atjauno noklusēto pozicionēšanu */
+  opacity: 1; /* Padara redzamu */
+}
+
+/* Varat noņemt šo, ja vairs neizmantojat custom radio pogas */
+.checkmark {
+  display: none;
+}
+    
+    .option:hover input ~ .checkmark {
+      background-color: #ccc;
+    }
+    
+    .option input:checked ~ .checkmark {
+      background-color: var(--primary-color);
+    }
+    
+    .checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+    }
+    
+    .option input:checked ~ .checkmark:after {
+      display: block;
+    }
+    
+    .option .checkmark:after {
+      top: 7px;
+      left: 7px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: white;
+    }
+    
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 500;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    button:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .reset-btn {
+      background-color: #f5f5f5;
+      color: var(--text-color);
+    }
+    
+    .reset-btn:hover {
+      background-color: #e0e0e0;
+    }
+    
+    .results {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: var(--card-color);
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      display: none;
+    }
+    
+    .results h2 {
+      color: var(--primary-color);
+      margin-top: 0;
+    }
+    
+    .score {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 15px 0;
+    }
+    
+    .correct {
+      color: var(--correct-border);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Kvadrātfunkcijas īpašības - paškontrole</h1>
+    
+    <div class="user-input">
+      <label for="username">Ievadi savu vārdu:</label>
+      <input type="text" id="username" placeholder="Tavs vārds">
+    </div>
+
+    <!-- 1. uzdevums -->
+    <div class="question-block">
+      <div class="question-header">
+        <div class="question-number">1</div>
+        <h2 class="question-title">Izpildi testu!</h2>
+      </div>
+      <div class="question-content">
+        <div class="question-image">
+          <img src="uzdevums1.png" alt="1. uzdevuma attēls">
+        </div>
+        <div class="question-options">
+          <p style="font-weight: bold; font-size: 20px">Funkcijas y = ax² + bx + c grafikā iezīmēta tā daļa (sarkana), kurā funkcija ir:</p>
+          
+          <div class="question-part" id="q1a-part">
+            <p style="font-weight: bold">a)</p>
+            <label class="option"><input type="radio" name="q1a" value="A"> (A) tikai augoša</label>
+            <label class="option"><input type="radio" name="q1a" value="B"> (B) tikai dilstoša</label>
+            <label class="option"><input type="radio" name="q1a" value="C"> (C) y > 0</label>
+            <label class="option"><input type="radio" name="q1a" value="D"> (D) y < 0</label>
+          </div>
+          
+          <div class="question-part" id="q1b-part">
+            <p style="font-weight: bold">b)</p>
+            <label class="option"><input type="radio" name="q1b" value="A"> (A) tikai augoša</label>
+            <label class="option"><input type="radio" name="q1b" value="B"> (B) tikai dilstoša</label>
+            <label class="option"><input type="radio" name="q1b" value="C"> (C) y > 0</label>
+            <label class="option"><input type="radio" name="q1b" value="D"> (D) y < 0</label>
+          </div>
+          
+          <div class="question-part" id="q1c-part">
+            <p style="font-weight: bold">c)</p>
+            <label class="option"><input type="radio" name="q1c" value="A"> (A) tikai augoša</label>
+            <label class="option"><input type="radio" name="q1c" value="B"> (B) tikai dilstoša</label>
+            <label class="option"><input type="radio" name="q1c" value="C"> (C) y > 0</label>
+            <label class="option"><input type="radio" name="q1c" value="D"> (D) y < 0</label>
+          </div>
+          
+          <div class="question-part" id="q1d-part">
+            <p style="font-weight: bold">d)</p>
+            <label class="option"><input type="radio" name="q1d" value="A"> (A) tikai augoša</label>
+            <label class="option"><input type="radio" name="q1d" value="B"> (B) tikai dilstoša</label>
+            <label class="option"><input type="radio" name="q1d" value="C"> (C) y > 0</label>
+            <label class="option"><input type="radio" name="q1d" value="D"> (D) y < 0</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. uzdevums (ar dropdown) -->
+    <div class="question-block">
+      <div class="question-header">
+        <div class="question-number">2</div>
+        <h2 class="question-title">Izmantojot funkcijas y = x² + 2x - 8 grafiku, izpildi testu!</h2>
+      </div>
+      <div class="question-content">
+        <div class="question-image">
+          <img src="uzdevums2.png" alt="2. uzdevuma attēls">
+        </div>
+        <div class="question-options">
+          <div class="question-part" id="q2a-part">
+            <p style="font-weight: bold; font-size: 20px">a) E(y)</p>
+            <select name="q2a">
+              <option value="">Izvēlies atbildi...</option>
+              <option value="A">(A) (−9; +∞)</option>
+              <option value="B">(B) (−9; −2)</option>
+              <option value="C">(C) (4; −2)</option>
+              <option value="D">(D) (4; 2)</option>
+            </select>
+          </div>
+          
+          <div class="question-part" id="q2b-part">
+            <p style="font-weight: bold; font-size: 20px">b) Krustpunkti ar x asi ir </p>
+            <select name="q2b">
+              <option value="">Izvēlies atbildi...</option>
+              <option value="A">(A) x = −9</option>
+              <option value="B">(B) x₁ = −4, x₂ = 2</option>
+              <option value="C">(C) x₁ = 4, x₂ = 2</option>
+              <option value="D">(D) x₁ = −4, x₂ = −2</option>
+            </select>
+          </div>
+          
+          <div class="question-part" id="q2c-part">
+            <p style="font-weight: bold; font-size: 20px">c) Funkcija ir augoša intervālā, ja x pieder </p>
+            <select name="q2c">
+              <option value="">Izvēlies atbildi...</option>
+              <option value="A">(A) (−∞; −1)</option>
+              <option value="B">(B) (−∞; 2)</option>
+              <option value="C">(C) (−1; +∞)</option>
+              <option value="D">(D) (2; +∞)</option>
+            </select>
+          </div>
+          
+          <div class="question-part" id="q2d-part">
+            <p style="font-weight: bold; font-size: 20px">d) Funkcija ir dilstoša intervālā, ja x pieder </p>
+            <select name="q2d">
+              <option value="">Izvēlies atbildi...</option>
+              <option value="A">(A) (−∞; −1)</option>
+              <option value="B">(B) (−∞; 2)</option>
+              <option value="C">(C) (−1; +∞)</option>
+              <option value="D">(D) (2; +∞)</option>
+            </select>
+          </div>
+          
+          <div class="question-part" id="q2e-part">
+            <p style="font-weight: bold; font-size: 20px">e) Funkcijai punktā (-1;-9) ir </p>
+            <select name="q2e">
+              <option value="">Izvēlies atbildi...</option>
+              <option value="A">(A) mazākā vērtība</option>
+              <option value="B">(B) lielākā vērtība</option>
+              <option value="C">(C) krustpunkts ar x asi </option>
+              <option value="D">(D) krustpunkts ar y asi </option>
+            </select>
+          </div>
+          
+          <div class="question-part" id="q2f-part">
+            <p style="font-weight: bold; font-size: 20px">f) Funkcijas vērtības ir pozitīvas (y>0) intervālā, ja x pieder </p>
+            <select name="q2f">
+              <option value="">Izvēlies atbildi...</option>
+              <option value="A">(A) (−4; 2)</option>
+              <option value="B">(B) (−1; +∞)</option>
+              <option value="C">(C) (−∞; −1)</option>
+              <option value="D">(D) (−∞; −4) ∪ (2; +∞)</option>
+            </select>
+          </div>
+          
+          <div class="question-part" id="q2g-part">
+            <p style="font-weight: bold; font-size: 20px">g) Funkcijas vērtības ir negatīvas (y<0) intervālā, ja x pieder </p>
+            <select name="q2g">
+              <option value="">Izvēlies atbildi...</option>
+              <option value="A">(A) (−∞; −4) ∪ (2; +∞)</option>
+              <option value="B">(B) (−∞; −1)</option>
+              <option value="C">(C) (−4; 2)</option>
+              <option value="D">(D) (−∞; −2)</option>
+            </select>
+          </div>
+          
+          <div class="question-part" id="q2h-part">
+            <p style="font-weight: bold; font-size: 20px">h) Funkcijas grafikam pieder punkts </p>
+            <select name="q2h">
+              <option value="">Izvēlies atbildi...</option>
+              <option value="A">(A) (−1; 8)</option>
+              <option value="B">(B) (−3; −5)</option>
+              <option value="C">(C) (−8; 0)</option>
+              <option value="D">(D) (0; 2)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. uzdevums -->
+    <div class="question-block">
+      <div class="question-header">
+        <div class="question-number">3</div>
+        <h2 class="question-title">Izmantojot funkcijas y = -x² - 4x - 4 grafiku, izpildi testu!</h2>
+      </div>
+      <div class="question-content">
+        <div class="question-image">
+          <img src="uzdevums3.png" alt="3. uzdevuma attēls">
+        </div>
+        <div class="question-options">
+          <div class="question-part" id="q3a-part">
+            <p style="font-weight: bold; font-size: 20px">a) D(y)</p>
+            <label class="option"><input type="radio" name="q3a" value="A"> (A) (−∞; +∞)</label>
+            <label class="option"><input type="radio" name="q3a" value="B"> (B) (0; +∞)</label>
+            <label class="option"><input type="radio" name="q3a" value="C"> (C) (−∞; −2]</label>
+            <label class="option"><input type="radio" name="q3a" value="D"> (D) [−2; +∞)</label>
+          </div>
+          
+          <div class="question-part" id="q3b-part">
+            <p style="font-weight: bold; font-size: 20px">b) Parabolas virsotne atrodas punktā</p>
+            <label class="option"><input type="radio" name="q3b" value="A"> (A) (4; 0)</label>
+            <label class="option"><input type="radio" name="q3b" value="B"> (B) (0; 4)</label>
+            <label class="option"><input type="radio" name="q3b" value="C"> (C) (−2; 0)</label>
+            <label class="option"><input type="radio" name="q3b" value="D"> (D) (0; −2)</label>
+          </div>
+          
+          <div class="question-part" id="q3c-part">
+            <p style="font-weight: bold; font-size: 20px">c) Kvadrātrinomā −x² − 4x − 4=0 diskriminants ir</p>
+            <label class="option"><input type="radio" name="q3c" value="A"> (A) D < 0</label>
+            <label class="option"><input type="radio" name="q3c" value="B"> (B) D = 0</label>
+            <label class="option"><input type="radio" name="q3c" value="C"> (C) D > 0</label>
+            <label class="option"><input type="radio" name="q3c" value="D"> (D) D = −2</label>
+          </div>
+          
+          <div class="question-part" id="q3d-part">
+            <p style="font-weight: bold; font-size: 20px">d) Funkcijas vērtības ir negatīvas (y<0) intervālā, ja x pieder </p>
+            <label class="option"><input type="radio" name="q3d" value="A"> (A) (−∞; −2) ∪ (−2; +∞)</label>
+            <label class="option"><input type="radio" name="q3d" value="B"> (B) (−∞; −2]</label>
+            <label class="option"><input type="radio" name="q3d" value="C"> (C) [−2; +∞)</label>
+            <label class="option"><input type="radio" name="q3d" value="D"> (D) (−∞; −2)</label>
+          </div>
+          
+          <div class="question-part" id="q3e-part">
+            <p style="font-weight: bold; font-size: 20px">e) Funkcija y = −x² − 4x − 4 ir dilstoša intervālā, ja x pieder </p>
+            <label class="option"><input type="radio" name="q3e" value="A"> (A) (−∞; −2)</label>
+            <label class="option"><input type="radio" name="q3e" value="B"> (B) (−∞; +∞)</label>
+            <label class="option"><input type="radio" name="q3e" value="C"> (C) (−2; +∞)</label>
+            <label class="option"><input type="radio" name="q3e" value="D"> (D) (0; +∞)</label>
+          </div>
+          
+          <div class="question-part" id="q3f-part">
+            <p style="font-weight: bold; font-size: 20px">f) Funkcijas simetrijas ass vienādojums ir</p>
+            <label class="option"><input type="radio" name="q3f" value="A"> (A) x = 2</label>
+            <label class="option"><input type="radio" name="q3f" value="B"> (B) x = −2</label>
+            <label class="option"><input type="radio" name="q3f" value="C"> (C) y = 2</label>
+            <label class="option"><input type="radio" name="q3f" value="D"> (D) y = −2</label>
+          </div>
+          
+          <div class="question-part" id="q3g-part">
+            <p style="font-weight: bold; font-size: 20px">g) Punktam A(−3; −1) simetriskais grafika punkts ir</p>
+            <label class="option"><input type="radio" name="q3g" value="A"> (A) B(3; 1)</label>
+            <label class="option"><input type="radio" name="q3g" value="B"> (B) B(−3; 1)</label>
+            <label class="option"><input type="radio" name="q3g" value="C"> (C) B(1; 1)</label>
+            <label class="option"><input type="radio" name="q3g" value="D"> (D) B(−1; −1)</label>
+          </div>
+          
+          <div class="question-part" id="q3h-part">
+            <p style="font-weight: bold; font-size: 20px">h) y(x) = 0, ja</p>
+            <label class="option"><input type="radio" name="q3h" value="A"> (A) x = 0</label>
+            <label class="option"><input type="radio" name="q3h" value="B"> (B) x = −2</label>
+            <label class="option"><input type="radio" name="q3h" value="C"> (C) x = −4</label>
+            <label class="option"><input type="radio" name="q3h" value="D"> (D) x = 2</label>
+          </div>
+          
+          <div class="question-part" id="q3i-part">
+            <p style="font-weight: bold; font-size: 20px">i) Funkcija ir augoša intervālā, ja x pieder</p>
+            <label class="option"><input type="radio" name="q3i" value="A"> (A) (−∞; −2)</label>
+            <label class="option"><input type="radio" name="q3i" value="B"> (B) (−∞; +∞)</label>
+            <label class="option"><input type="radio" name="q3i" value="C"> (C) (−2; +∞)</label>
+            <label class="option"><input type="radio" name="q3i" value="D"> (D) (0; +∞)</label>
+          </div>
+          
+          <div class="question-part" id="q3j-part">
+            <p style="font-weight: bold; font-size: 20px">j) Funkcijas vērtības ir mazākas par nulli vai vienādas ar nulli intervālā, ja x pieder </p>
+            <label class="option"><input type="radio" name="q3j" value="A"> (A) (−∞; −2) ∪ (−2; +∞)</label>
+            <label class="option"><input type="radio" name="q3j" value="B"> (B) (−∞; +∞)</label>
+            <label class="option"><input type="radio" name="q3j" value="C"> (C) [−2; +∞)</label>
+            <label class="option"><input type="radio" name="q3j" value="D"> (D) (−∞; −2)</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. uzdevums (ar dropdown) -->
+    <div class="question-block">
+      <div class="question-header">
+        <div class="question-number">4</div>
+        <h2 class="question-title">Izmantojot kvadrātfunkcijas y = ax² + bx + c grafiku, atbildi uz jautājumiem!</h2>
+      </div>
+      <div class="question-content">
+        <div class="question-image">
+          <img src="uzdevums4.png" alt="4. uzdevuma attēls">
+        </div>
+        <div class="question-options">
+          <div class="question-part" id="q4a-part">
+            <p style="font-weight: bold; font-size: 20px">a) Funkcijas definīcijas apgabals ir </p>
+            <select name="q4a">
+              <option value="">Izvēlies atbildi...</option>
+              <option value="A">(A) D(y) = (1; 3)</option>
+              <option value="B">(B) D(y) = (−∞; −1)</option>
+              <option value="C">(C) D(y) = (3; +∞)</option>
+              <option value="D">(D) D(y) = ℝ</option>
+            </select>
+          </div>
+          
+          <div class="question-part" id="q4b-part">
+            <p style="font-weight: bold; font-size: 20px">b) Funkcijas vērtību apgabals ir </p>
+            <select name="q4b">
+              <option value="">Izvēlies atbildi...</option>
+              <option value="A">(A) E(y) = [−4; +∞)</option>
+              <option value="B">(B) E(y) = (−∞; −4]</option>
+              <option value="C">(C) E(y) = (−1; 3)</option>
+              <option value="D">(D) E(y) = ℝ</option>
+            </select>
+          </div>
+          
+          <div class="question-part" id="q4c-part">
+            <p style="font-weight: bold; font-size: 20px">c) Funkcijas grafiks krusto y asi punktā, kura koordinātas ir </p>
+            <select name="q4c">
+              <option value="">Izvēlies atbildi...</option>
+              <option value="A">(A) (1; 0)</option>
+              <option value="B">(B) (0; −3)</option>
+              <option value="C">(C) (3; 0)</option>
+              <option value="D">(D) (−1; 0)</option>
+            </select>
+          </div>
+        
+          <div class="question-part" id="q4d-part">
+            <p style="font-weight: bold; font-size: 20px">d) Funkcijas nulles ir </p>
+            <select name="q4d">
+              <option value="">Izvēlies atbildi...</option>
+              <option value="A">(A) −1; 3</option>
+              <option value="B">(B) −1; −3</option>
+              <option value="C">(C) 0; 3</option>
+              <option value="D">(D) −1; 0</option>
+            </select>
+          </div>
+          
+          <div class="question-part" id="q4e-part">
+            <p style="font-weight: bold; font-size: 20px">e) Funkcija ir augoša, ja </p>
+            <select name="q4e">
+              <option value="">Izvēlies atbildi...</option>
+              <option value="A">(A) x ∈ (−∞; 1)</option>
+              <option value="B">(B) x ∈ (−1; 3)</option>
+              <option value="C">(C) x ∈ (3; +∞)</option>
+              <option value="D">(D) x ∈ (1; +∞)</option>
+            </select>
+          </div>
+          
+          <div class="question-part" id="q4f-part">
+            <p style="font-weight: bold; font-size: 20px">f) Funkcija ir dilstoša, ja </p>
+            <select name="q4f">
+              <option value="">Izvēlies atbildi...</option>
+              <option value="A">(A) x ∈ (−∞; 1)</option>
+              <option value="B">(B) x ∈ (−1; 3)</option>
+              <option value="C">(C) x ∈ (3; +∞)</option>
+              <option value="D">(D) x ∈ (1; +∞)</option>
+            </select>
+          </div>
+          
+          <div class="question-part" id="q4g-part">
+            <p style="font-weight: bold; font-size: 20px">g) Funkcija ir pozitīva (y>0), ja </p>
+            <select name="q4g">
+              <option value="">Izvēlies atbildi...</option>
+              <option value="A">(A) x ∈ (−∞; 1)</option>
+              <option value="B">(B) x ∈ (−∞; -1) ∪ (3; +∞)</option>
+              <option value="C">(C) x ∈ (−1; 3)</option>
+              <option value="D">(D) x ∈ (0; 3)</option>
+            </select>
+          </div>
+          
+          <div class="question-part" id="q4h-part">
+            <p style="font-weight: bold; font-size: 20px">h)  Funkcija ir negatīva (y<0), ja </p>
+            <select name="q4h">
+              <option value="">Izvēlies atbildi...</option>
+              <option value="A">(A) x ∈ (−1; 3)</option>
+              <option value="B">(B) x ∈ (−∞; −1) ∪ (3; +∞)</option>
+              <option value="C">(C) x ∈ (−∞; +∞)</option>
+              <option value="D">(D) x ∈ (3; +∞)</option>
+            </select>
+          </div>
+          
+          <div class="question-part" id="q4i-part">
+            <p style="font-weight: bold; font-size: 20px">i) Funkcijas simetrijas ass vienādojums ir </p>
+            <select name="q4i">
+              <option value="">Izvēlies atbildi...</option>
+              <option value="A">(A) x = −1</option>
+              <option value="B">(B) x = 3</option>
+              <option value="C">(C) x = 1</option>
+              <option value="D">(D) x = −3</option>
+            </select>
+          </div>
+          
+          <div class="question-part" id="q4j-part">
+            <p style="font-weight: bold; font-size: 20px">j) Funkcijas mazākā vērtība ir </p>
+            <select name="q4j">
+              <option value="">Izvēlies atbildi...</option>
+              <option value="A">(A) y = −3</option>
+              <option value="B">(B) y = −1</option>
+              <option value="C">(C) y = 3</option>
+              <option value="D">(D) y = −4</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="button-group">
+        <button id="checkButton" onclick="checkAnswers()">Pārbaudīt</button>
+        <button class="reset-btn" id="resetButton" onclick="resetForm()">Mēģināt vēlreiz</button>
+      </div>
+
+    <div class="results" id="results">
+      <h2>Rezultāti</h2>
+      <div id="userGreeting"></div>
+      <div class="score">Tu atbildēji pareizi uz <span id="correctCount">0</span> no <span id="totalQuestions">0</span> jautājumiem (<span id="percentage">0</span>%)</div>
+    </div>
+  </div>
+
+  <script>
+    // Pareizās atbildes
+    const correctAnswers = {
+      q1a: "A", q1b: "B", q1c: "D", q1d: "C",
+      q2a: "A", q2b: "B", q2c: "C", q2d: "A", q2e: "A", q2f: "D", q2g: "C", q2h: "B",
+      q3a: "A", q3b: "C", q3c: "B", q3d: "A", q3e: "C", q3f: "B", q3g: "D", q3h: "B", q3i: "A", q3j: "B",
+      q4a: "D", q4b: "A", q4c: "B", q4d: "A", q4e: "D", q4f: "A", q4g: "B", q4h: "A", q4i: "C", q4j: "D"
+    };
+
+    // Atbilžu pārbaude
+    function checkAnswers() {
+      const checkButton = document.getElementById('checkButton');
+      const resetButton = document.getElementById('resetButton');
+      
+      // Atspējojam pārbaudes pogu
+      checkButton.disabled = true;
+      resetButton.disabled = false;
+
+      const username = document.getElementById('username').value.trim();
+      let correctCount = 0;
+      let totalQuestions = 0;
+
+      // Pārbaudām katru jautājumu
+      for (const question in correctAnswers) {
+        totalQuestions++;
+        const questionPart = document.getElementById(`${question}-part`);
+        let selectedValue = "";
+        
+        if (question.startsWith('q1') || question.startsWith('q3')) {
+          const selectedOption = document.querySelector(`input[name="${question}"]:checked`);
+          if (selectedOption) selectedValue = selectedOption.value;
+        } else {
+          const selectElement = document.querySelector(`select[name="${question}"]`);
+          if (selectElement) selectedValue = selectElement.value;
+        }
+        
+        questionPart.classList.remove('correct', 'incorrect', 'unanswered');
+        
+        if (selectedValue === correctAnswers[question]) {
+          correctCount++;
+          questionPart.classList.add('correct');
+        } else if (selectedValue !== "") {
+          questionPart.classList.add('incorrect');
+        } else {
+          questionPart.classList.add('unanswered');
+        }
+      }
+
+      // Aprēķinām procentus
+      const percentage = Math.round((correctCount / totalQuestions) * 100);
+
+      // Rādām rezultātus
+      document.getElementById('correctCount').textContent = correctCount;
+      document.getElementById('totalQuestions').textContent = totalQuestions;
+      document.getElementById('percentage').textContent = percentage;
+      
+      if (username) {
+        document.getElementById('userGreeting').innerHTML = `<p>${username}!</p>`;
+      } else {
+        //document.getElementById('userGreeting').innerHTML = '<p>Sveiks!</p>';
+      }
+      
+      document.getElementById('results').style.display = 'block';
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Formas atiestatīšana
+    function resetForm() {
+      const checkButton = document.getElementById('checkButton');
+      const resetButton = document.getElementById('resetButton');
+      
+      // Atjaunojam pogu stāvokli
+      checkButton.disabled = false;
+      resetButton.disabled = true;
+
+      // Noņemam krāsu stilus no visiem jautājumiem
+      document.querySelectorAll('.question-part').forEach(part => {
+        part.classList.remove('correct', 'incorrect', 'unanswered');
+      });
+      
+      // Atiestatām radio pogas
+      const radioButtons = document.querySelectorAll('input[type="radio"]');
+      radioButtons.forEach(button => {
+        button.checked = false;
+      });
+      
+      // Atiestatām select elementus
+      const selectElements = document.querySelectorAll('select');
+      selectElements.forEach(select => {
+        select.selectedIndex = 0;
+      });
+      
+      // Paslēpjam rezultātus
+      document.getElementById('results').style.display = 'none';
+    }
+
+    // Sākotnējā ielādēšanā atspējojam "Mēģināt vēlreiz" pogu
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('resetButton').disabled = true;
+    });
+  </script>
+</body>
+</html>
