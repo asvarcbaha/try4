@@ -31,13 +31,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        
+      - name: Verify index.html exists
+        run: |
+          if [ ! -f "index.html" ]; then
+            echo "::error::No index.html file found in root directory"
+            exit 1
+          fi
+          
       - name: Setup Pages
         uses: actions/configure-pages@v5
+        with:
+          static_site_generator: "none" # Explicitly set to static site
+          
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           # Upload entire repository
           path: '.'
+          
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
